@@ -1,49 +1,21 @@
 import { useState, useEffect, useContext } from 'react';
 import styles from '../styles/components/Countdown.module.css';
-import{ChallengesContext} from '../contexts/ChallengeContext';
+import{CountdownContext} from '../contexts/CountdownContext';
 
-//é uma variavel global, para saber qual é o formato
-let countdownTimeout:NodeJS.Timeout; 
 
 export function Countdown() {
-  const {startNewChallenge} = useContext(ChallengesContext);
+  const {minutes,
+    seconds,
+    hasFinished,
+    isActive,
+    startCountdown,
+    resetCountdown} = useContext(CountdownContext);
 
-  const [time, setTime] = useState(0.1*60);
-  const [isActive, setIsActive] = useState(false);
-  const [hasFinished, setHasFinished] = useState(false);
-
-  const minutes = Math.floor(time / 60);
-  const seconds = time % 60;
-
+  //esta formatando um dado, por isso que não fica no context, já que é no layout
+  //e não na regra de negocio
   const [minuteLeft, minuteRight] = String(minutes).padStart(2, '0').split('');
   const [secondLeft, secondRight] = String(seconds).padStart(2, '0').split('');
 
-  function startCountdown() {
-    setIsActive(true);
-  }
-
-  function resetCountdown() {
-    //fazendo com que o setTimeout, não execute uma vez
-    clearTimeout(countdownTimeout);
-    setIsActive(false);
-    setTime(0.1*60);
-  }
-
-  //useEffect é uma função para disparar efeitos colaterais
-  //quando algo mudar/acontecer, vai dispará ele 
-  //ela vai rodar isso todas as vezes que active mudar
-  useEffect(()=>{
-    if(isActive && time > 0){
-      countdownTimeout = setTimeout(()=>{
-        setTime(time-1)}, 1000);
-
-    } else if(isActive && time === 0) {
-      setHasFinished(true)
-      setIsActive(false);
-      startNewChallenge();
-      
-    }
-  }, [isActive, time])
 
   return(
     <div>
@@ -82,9 +54,6 @@ export function Countdown() {
           )  }
         </>
       )}
-      
-      
-
       
     </div>
   );
